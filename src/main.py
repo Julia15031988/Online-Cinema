@@ -4,7 +4,7 @@ from src.routes.movies import router as movie_router
 from src.routes.cart import router as cart_router
 from src.routes.orders import router as orders_router
 from src.config.settings import settings
-from src.database.models.base import Base
+from src.database.models.user import Base
 from src.database.session import engine
 app = FastAPI()
 
