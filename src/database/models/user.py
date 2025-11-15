@@ -71,6 +71,7 @@ class User(Base):
     cart = relationship("Cart", back_populates="user", uselist=False)
     orders = relationship("Order", back_populates="user")
     purchases = relationship("Purchase", back_populates="user")
+    payments = relationship("Payment", back_populates="user")
 
 
 class UserProfile(Base):
@@ -90,16 +91,6 @@ class UserProfile(Base):
 class ActivationToken(Base):
     __tablename__ = "activation_tokens"
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
-    token = Column(String(255), unique=True, nullable=False, index=True)
-    expires_at = Column(DateTime, nullable=False)
-
-    user = relationship("User", back_populates="activation_token")
-
-
-class ActivationToken(Base):
-    __tablename__ = "activation_tokens"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     token = Column(String(255), unique=True, nullable=False, index=True)

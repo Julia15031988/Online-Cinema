@@ -5,8 +5,6 @@ from typing import Optional
 from sqlalchemy import String, Float, Text, DECIMAL, UniqueConstraint, Date, ForeignKey, Table, Column
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import Enum as SQLAlchemyEnum
-
-from database import Base
 import enum
 import uuid as uuid_pkg
 
