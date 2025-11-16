@@ -7,7 +7,7 @@ import secrets
 from src.database.models.user import (
     User, UserGroup, ActivationToken, PasswordResetToken, RefreshToken
 )
-from src.security.utils.hash import hash_password
+from src.security.utils import hash_password
 from src.config.settings import settings
 
 
