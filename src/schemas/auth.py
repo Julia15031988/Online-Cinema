@@ -1,6 +1,6 @@
 from pydantic import BaseModel, field_validator, EmailStr
 
-from src.database.validators import accounts_validators
+from src.database.validators import validate_password_strength, validate_email
 from src.database.models.user import UserGroupEnum
 
 
@@ -20,7 +20,7 @@ class BaseEmailPasswordSchema(BaseModel):
     @field_validator("password")
     @classmethod
     def validate_password(cls, value):
-        return accounts_validators.validate_password_strength(value)
+        return validate_password_strength(value)
 
 
 class UserRegistrationRequestSchema(BaseEmailPasswordSchema):
@@ -67,7 +67,7 @@ class UserChangePasswordRequestSchema(BaseModel):
     @field_validator("new_password")
     @classmethod
     def validate_password(cls, value):
-        return accounts_validators.validate_password_strength(value)
+        return validate_password_strength(value)
 
 
 class PasswordResetRequestSchema(BaseModel):
@@ -82,7 +82,7 @@ class PasswordResetCompleteRequestSchema(BaseModel):
     @field_validator("new_password")
     @classmethod
     def validate_password(cls, value):
-        return accounts_validators.validate_password_strength(value)
+        return validate_password_strength(value)
 
 
 class TokenRefreshRequestSchema(BaseModel):
