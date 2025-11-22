@@ -55,6 +55,7 @@ async def activate(token: str, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
     return {"detail": "Account activated"}
 
+
 @router.post("/resend-activation")
 async def resend_activation(payload: ResendActivationRequestSchema, db: AsyncSession = Depends(get_db)):
     user = await get_user_by_email(db, payload.email)
@@ -99,6 +100,7 @@ async def refresh(
     access_token = jwt.create_access_token({"user_id": token_row.user_id})
     return {"access_token": access_token, "refresh_token": token_row.token, "token_type": "bearer"}
 
+
 @router.post("/logout")
 async def logout(payload: TokenRefreshRequestSchema, db: AsyncSession = Depends(get_db)):
     await revoke_refresh_token(db, payload.refresh_token)
@@ -115,6 +117,7 @@ async def forgot_password(payload: TokenRefreshRequestSchema, db: AsyncSession =
     # await send_email(user.email, "Reset your password", f"Click to reset: {link}")
     return {"detail": "If the email is registered, a reset link was sent"}
 
+
 @router.post("/reset-password")
 async def reset_password(payload: PasswordResetRequestSchema, db: AsyncSession = Depends(get_db)):
     q = await db.execute(select(PasswordResetToken).where(PasswordResetToken.token == payload.token))
@@ -129,6 +132,7 @@ async def reset_password(payload: PasswordResetRequestSchema, db: AsyncSession =
     await db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user.id))
     await db.commit()
     return {"detail": "Password updated"}
+
 
 @router.post("/change-password")
 async def change_password(
