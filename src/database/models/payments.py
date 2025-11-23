@@ -14,12 +14,12 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.database import Base
+from src.database.models.base import Base
 from src.database.models.user import User
 from src.database.models.orders import Order, OrderItem
 
 
-class PaymentStatus(str, enum.Enum):
+class PaymentStatusEnum(str, enum.Enum):
     successful = "successful"
     canceled = "canceled"
     refunded = "refunded"
@@ -32,7 +32,7 @@ class Payment(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    status: Mapped[PaymentStatus] = mapped_column(Enum(PaymentStatus), nullable=False, default=PaymentStatus.successful)
+    status: Mapped[PaymentStatusEnum] = mapped_column(Enum(PaymentStatusEnum), nullable=False, default=PaymentStatusEnum.successful)
     amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     external_payment_id: Mapped[str] = mapped_column(String, nullable=True)
 
