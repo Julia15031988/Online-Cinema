@@ -10,7 +10,7 @@ from src.routes import (
     payments_router,
 )
 from src.database.models.user import UserGroup, UserGroupEnum
-from src.database import engine
+from src.database.session import engine
 from src.database.models.base import Base
 
 
