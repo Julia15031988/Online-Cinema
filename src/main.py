@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 from sqlalchemy import select, insert
-from src.database.session import engine
-from src.routes.auth import router as auth_router
 from src.routes import (
     auth_router,
     movies_router,
