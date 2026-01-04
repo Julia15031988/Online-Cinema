@@ -6,8 +6,8 @@ from typing import Optional
 import aiosmtplib
 from jinja2 import Environment, FileSystemLoader
 
-from app.core.exceptions.email import BaseEmailError
-from app.core.notifications.interfaces import EmailSenderInterface
+from src.exceptions.email import BaseEmailError
+from src.notifications.interfaces import EmailSenderInterface
 
 
 class EmailSender(EmailSenderInterface):

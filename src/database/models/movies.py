@@ -1,18 +1,12 @@
-import datetime
-from enum import Enum
-from typing import Optional
-
 from sqlalchemy import String, Float, Text, DECIMAL, UniqueConstraint, Date, ForeignKey, Table, Column
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import Enum as SQLAlchemyEnum
-import enum
 import uuid as uuid_pkg
-
+import enum
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DECIMAL, UniqueConstraint, Table, Enum, \
     DateTime, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from src.database.models.base import Base
-from src.database.models.orders import OrderItem
 
 
 movie_genres = Table(
@@ -93,7 +87,8 @@ class Movie(Base):
     cart_items: Mapped[list["CartItem"]] = relationship(back_populates="movie", cascade="all, delete-orphan")
     purchases: Mapped[list["Purchase"]] = relationship(back_populates="movie")
 
-    order_items: Mapped[list["OrderItem"]] = relationship(back_populates="movie")
+
+    order_items: Mapped[list["OrderItem"]] = relationship("OrderItem", back_populates="movie")
 
 
 class ReactionType(enum.Enum):

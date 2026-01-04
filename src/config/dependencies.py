@@ -1,33 +1,21 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from src.database.session import get_db
-from src.database.models.user import User
-from src.security import get_token
-from src.security.token_manager import JWTAuthManager
-from src.config.settings import settings
 import os
 import re
 from typing import Awaitable, Callable
-
-from fastapi import Depends, HTTPException, Request, UploadFile
+from fastapi import Depends, HTTPException, Request, UploadFile, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
-from sqlalchemy.cyextension.processors import date_cls
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-from starlette import status
-
-from config.settings import TestingSettings, Settings
-from config import BaseAppSettings
-from database.models.accounts import User, UserGroupEnum, UserGroup, UserProfile, GenderEnum
-from database import get_db
-from exceptions import BaseSecurityError, TokenExpiredError, S3FileUploadError
-from notifications import EmailSenderInterface, EmailSender
-from security import get_token
-from security.interfaces import JWTAuthManagerInterface
-from security.token_manager import JWTAuthManager
-from storages import S3StorageInterface, S3StorageClient
+from src.database.session import get_db
+from src.database.models.user import User, UserGroupEnum, UserGroup, UserProfile, GenderEnum
+from src.security import get_token
+from src.security.token_manager import JWTAuthManager
+from src.security.interfaces import JWTAuthManagerInterface
+from src.config.settings import settings, get_settings, TestingSettings, Settings
+from src.config.settings import BaseAppSettings
+from src.exceptions import BaseSecurityError, TokenExpiredError, S3FileUploadError
+from src.notifications.emails import EmailSenderInterface, EmailSender
+from src.exceptions.storage import S3StorageInterface, S3StorageClient
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")

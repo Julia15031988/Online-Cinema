@@ -15,8 +15,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database.models.base import Base
-from src.database.models.user import User
-from src.database.models.orders import Order, OrderItem
 
 
 class PaymentStatusEnum(str, enum.Enum):

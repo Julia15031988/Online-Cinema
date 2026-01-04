@@ -1,7 +1,6 @@
 from datetime import datetime
 import enum
 from src.database.models.user import User
-from src.database.models.movies import Movie
 from sqlalchemy import ForeignKey, DECIMAL, Enum, DateTime, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -33,7 +32,7 @@ class Order(Base):
 
 
 class OrderItem(Base):
-    __tablename__ = "orderitems"
+    __tablename__ = "order_items"
     id: Mapped[int] = mapped_column(primary_key=True)
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
     movie_id: Mapped[int] = mapped_column(ForeignKey("movies.id"))

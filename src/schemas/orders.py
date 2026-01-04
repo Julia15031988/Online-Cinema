@@ -10,7 +10,7 @@ class OrderMovieSchema(BaseModel):
     name: str = Field(..., description="Name of the movie.")
     price_at_order: Decimal = Field(..., description="Price of the movie at the time of order.")
 
-    model_config = ConfigDict(from_attributes=True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderResponseSchema(BaseModel):

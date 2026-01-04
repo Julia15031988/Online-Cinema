@@ -1,7 +1,8 @@
-import os
 from pathlib import Path
 from typing import Any
-
+from functools import lru_cache
+from pydantic import ConfigDict
+import os
 from pydantic_settings import BaseSettings
 
 
@@ -60,6 +61,22 @@ class Settings(BaseAppSettings):
     SECRET_KEY_REFRESH: str = os.getenv("SECRET_KEY_REFRESH", os.urandom(32).hex())
     JWT_SIGNING_ALGORITHM: str = os.getenv("JWT_SIGNING_ALGORITHM", "HS256")
 
+    STRIPE_SECRET_KEY: str = os.getenv("STRIPE_SECRET_KEY", "sk_test_default")
+
+
+    @property
+    def DATABASE_URL(self) -> str:
+        return (
+            f"postgresql+asyncpg://"
+            f"{self.POSTGRES_USER}:"
+            f"{self.POSTGRES_PASSWORD}@"
+            f"{self.POSTGRES_HOST}:"
+            f"{self.POSTGRES_DB_PORT}/"
+            f"{self.POSTGRES_DB}"
+        )
+
+    model_config = ConfigDict(env_file=".env")
+
 
 class TestingSettings(BaseAppSettings):
     SECRET_KEY_ACCESS: str = "SECRET_KEY_ACCESS"
@@ -73,3 +90,9 @@ class TestingSettings(BaseAppSettings):
             'PATH_TO_MOVIES_CSV',
             str(self.BASE_DIR / "database" / "seed_data" / "test_data.csv")
         )
+
+@lru_cache
+def get_settings() -> BaseAppSettings:
+    return BaseAppSettings()
+
+settings = Settings()

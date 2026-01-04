@@ -1,5 +1,9 @@
 import enum
+from src.database.validators.accounts import validate_password_strength, validate_email
+from src.database.models.base import Base
 from sqlalchemy.orm import relationship
+from src.security.utils import generate_secure_token
+from src.security.passwords import hash_password, verify_password
 from datetime import datetime, date, timedelta, timezone
 from typing import List, Optional
 
@@ -18,11 +22,6 @@ from sqlalchemy import (
 from sqlalchemy import (
     Column, Integer, String, Boolean, ForeignKey, DateTime, Text, Enum, UniqueConstraint
 )
-
-from database import Base
-from database.validators import accounts as validators
-from security.passwords import hash_password, verify_password
-from security.utils import generate_secure_token
 
 
 class GenderEnum(enum.Enum):

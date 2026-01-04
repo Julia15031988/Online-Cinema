@@ -15,11 +15,10 @@ from fastapi import (
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import get_db
-from src.config import settings
+from src.database.session import get_db
+from src.config.settings import settings
 from src.config.email_utils import get_accounts_email_notificator
 from src.notifications.interfaces import EmailSenderInterface
-
 from src.database.models.user import User
 from src.database.models.orders import Order, OrderItem, OrderStatusEnum
 from src.database.models.payments import Payment, PaymentItem, PaymentStatusEnum

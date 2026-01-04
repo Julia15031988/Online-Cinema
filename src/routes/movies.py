@@ -1,7 +1,8 @@
 from typing import Optional, Literal
 from sqlalchemy.exc import IntegrityError
 from fastapi import APIRouter, Query, Depends, HTTPException, status
-from sqlalchemy import select, or_, func, joinedload
+from sqlalchemy import select, or_, func
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.models.orders import OrderItem
 from src.database.session import get_db
