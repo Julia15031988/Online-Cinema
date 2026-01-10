@@ -31,7 +31,6 @@ from src.schemas.auth import (
     PasswordResetCompleteRequestSchema,
     UserChangePasswordRequestSchema,
 )
-from src.emailer import send_email
 
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
