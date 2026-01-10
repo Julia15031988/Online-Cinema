@@ -47,13 +47,17 @@ class CommentSchema(BaseModel):
 
 class CommentCreateSchema(BaseModel):
     movie_id: int = Field(..., description="ID of the movie being commented on.")
-    content: str = Field(..., min_length=1, max_length=1000, description="Text content of the comment.")
+    content: str = Field(
+        ..., min_length=1, max_length=1000, description="Text content of the comment."
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class CommentUpdateSchema(BaseModel):
-    content: Optional[str] = Field(None, min_length=1, max_length=1000, description="Updated text of the comment.")
+    content: Optional[str] = Field(
+        None, min_length=1, max_length=1000, description="Updated text of the comment."
+    )
 
     model_config = ConfigDict(from_attributes=True)
 

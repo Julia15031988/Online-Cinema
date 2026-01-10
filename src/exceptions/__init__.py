@@ -1,8 +1,4 @@
-from .security import (
-    BaseSecurityError,
-    InvalidTokenError,
-    TokenExpiredError
-)
+from .security import BaseSecurityError, InvalidTokenError, TokenExpiredError
 from .email import BaseEmailError
 from .storage import (
     BaseS3Error,
@@ -10,5 +6,5 @@ from .storage import (
     S3BucketNotFoundError,
     S3FileUploadError,
     S3FileNotFoundError,
-    S3PermissionError
+    S3PermissionError,
 )

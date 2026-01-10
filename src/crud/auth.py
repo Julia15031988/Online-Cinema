@@ -5,7 +5,11 @@ from datetime import datetime, timedelta
 import secrets
 
 from src.database.models.user import (
-    User, UserGroup, ActivationToken, PasswordResetToken, RefreshToken
+    User,
+    UserGroup,
+    ActivationToken,
+    PasswordResetToken,
+    RefreshToken,
 )
 from src.security.utils import hash_password
 from src.config.settings import settings
@@ -16,7 +20,9 @@ async def get_user_by_email(db: AsyncSession, email: str):
     return q.scalars().first()
 
 
-async def create_user(db: AsyncSession, email: str, password: str, group_name: str = "USER"):
+async def create_user(
+    db: AsyncSession, email: str, password: str, group_name: str = "USER"
+):
     existing = await get_user_by_email(db, email)
     if existing:
         return None
@@ -54,13 +60,17 @@ async def verify_activation_token(db: AsyncSession, token: str):
     user = user_q.scalars().first()
     if user:
         user.is_active = True
-        await db.execute(delete(ActivationToken).where(ActivationToken.user_id == user.id))
+        await db.execute(
+            delete(ActivationToken).where(ActivationToken.user_id == user.id)
+        )
         await db.commit()
     return user
 
 
 async def create_refresh_token(db: AsyncSession, user_id: int):
-    token, expires = secrets.token_urlsafe(64), datetime.now() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    token, expires = secrets.token_urlsafe(64), datetime.now() + timedelta(
+        days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+    )
     rt = RefreshToken(user_id=user_id, token=token, expires_at=expires)
     db.add(rt)
     await db.commit()
@@ -80,8 +90,12 @@ async def get_refresh_token(db: AsyncSession, token: str):
 
 async def create_password_reset_token(db: AsyncSession, user: User):
     token = secrets.token_urlsafe(32)
-    expires = datetime.now() + timedelta(hours=settings.PASSWORD_RESET_TOKEN_EXPIRE_HOURS)
-    await db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user.id))
+    expires = datetime.now() + timedelta(
+        hours=settings.PASSWORD_RESET_TOKEN_EXPIRE_HOURS
+    )
+    await db.execute(
+        delete(PasswordResetToken).where(PasswordResetToken.user_id == user.id)
+    )
     pr = PasswordResetToken(user_id=user.id, token=token, expires_at=expires)
     db.add(pr)
     await db.commit()
@@ -90,7 +104,9 @@ async def create_password_reset_token(db: AsyncSession, user: User):
 
 
 async def verify_password_reset_token(db: AsyncSession, token: str):
-    q = await db.execute(select(PasswordResetToken).where(PasswordResetToken.token == token))
+    q = await db.execute(
+        select(PasswordResetToken).where(PasswordResetToken.token == token)
+    )
     pr = q.scalars().first()
     if not pr or pr.expires_at < datetime.now():
         return None

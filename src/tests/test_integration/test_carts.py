@@ -11,10 +11,10 @@ from database.models.orders import OrderStatusEnum, Order, OrderItem
 
 @pytest.mark.asyncio
 async def test_add_movie_to_cart(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
-        test_movie: Movie,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
+    test_movie: Movie,
 ):
     """Test adding a movie to cart."""
     response = await auth_client.post(
@@ -37,10 +37,10 @@ async def test_add_movie_to_cart(
 
 @pytest.mark.asyncio
 async def test_add_duplicate_movie_to_cart(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
-        test_movie: Movie,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
+    test_movie: Movie,
 ):
     """Test adding the same movie twice to cart."""
     await auth_client.post(
@@ -58,10 +58,10 @@ async def test_add_duplicate_movie_to_cart(
 
 @pytest.mark.asyncio
 async def test_add_purchased_movie_to_cart(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
-        test_movie: Movie,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
+    test_movie: Movie,
 ):
     """Test adding a movie that was already purchased."""
     order = Order(user_id=test_user.id, status=OrderStatusEnum.PAID)
@@ -86,10 +86,10 @@ async def test_add_purchased_movie_to_cart(
 
 @pytest.mark.asyncio
 async def test_remove_movie_from_cart(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
-        test_movie: Movie,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
+    test_movie: Movie,
 ):
     """Test removing a movie from cart."""
     await auth_client.post(
@@ -112,9 +112,9 @@ async def test_remove_movie_from_cart(
 
 @pytest.mark.asyncio
 async def test_clear_cart(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
 ):
     """Test clearing the entire cart."""
     movie1 = Movie(
@@ -154,9 +154,9 @@ async def test_clear_cart(
 
 @pytest.mark.asyncio
 async def test_get_cart_contents(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
 ):
     """Test getting cart contents."""
     movie1 = Movie(
@@ -192,9 +192,9 @@ async def test_get_cart_contents(
 
 @pytest.mark.asyncio
 async def test_cart_total_price(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
 ):
     """Test cart total price calculation."""
     movie1 = Movie(
@@ -229,9 +229,9 @@ async def test_cart_total_price(
 
 @pytest.mark.asyncio
 async def test_remove_nonexistent_movie_from_cart(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
 ):
     """Test removing a movie that's not in the cart."""
     response = await auth_client.delete("/api/v1/cart/items/999")
@@ -241,9 +241,9 @@ async def test_remove_nonexistent_movie_from_cart(
 
 @pytest.mark.asyncio
 async def test_add_nonexistent_movie_to_cart(
-        auth_client: AsyncClient,
-        db_session: AsyncSession,
-        test_user: User,
+    auth_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
 ):
     """Test adding a movie that doesn't exist."""
     response = await auth_client.post(

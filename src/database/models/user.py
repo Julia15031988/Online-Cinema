@@ -1,26 +1,17 @@
 import enum
-from src.database.validators.accounts import validate_password_strength, validate_email
 from src.database.models.base import Base
 from sqlalchemy.orm import relationship
-from src.security.utils import generate_secure_token
-from src.security.passwords import hash_password, verify_password
-from datetime import datetime, date, timedelta, timezone
-from typing import List, Optional
-
+from datetime import datetime
 from sqlalchemy import (
-    ForeignKey,
+    Column,
+    Integer,
     String,
     Boolean,
+    ForeignKey,
     DateTime,
-    Enum,
-    Integer,
-    func,
     Text,
-    Date,
-    UniqueConstraint
-)
-from sqlalchemy import (
-    Column, Integer, String, Boolean, ForeignKey, DateTime, Text, Enum, UniqueConstraint
+    Enum,
+    UniqueConstraint,
 )
 
 
@@ -57,15 +48,27 @@ class User(Base):
 
     group = relationship("UserGroup", back_populates="users")
 
-    comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
+    comments = relationship(
+        "Comment", back_populates="user", cascade="all, delete-orphan"
+    )
     reactions = relationship("MovieReaction", back_populates="user")
 
     profile = relationship("UserProfile", uselist=False, back_populates="user")
-    activation_token = relationship("ActivationToken", uselist=False, back_populates="user",
-                                    cascade="all, delete-orphan")
-    password_reset_token = relationship("PasswordResetToken", uselist=False, back_populates="user",
-                                        cascade="all, delete-orphan")
-    refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
+    activation_token = relationship(
+        "ActivationToken",
+        uselist=False,
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    password_reset_token = relationship(
+        "PasswordResetToken",
+        uselist=False,
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    refresh_tokens = relationship(
+        "RefreshToken", back_populates="user", cascade="all, delete-orphan"
+    )
 
     cart = relationship("Cart", back_populates="user", uselist=False)
     orders = relationship("Order", back_populates="user")

@@ -28,8 +28,8 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 async def create_order(
-        db: AsyncSession = Depends(get_db),
-        current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> OrderResponseSchema:
     stmt_cart = select(Cart).where(Cart.user_id == current_user.id)
     result = await db.execute(stmt_cart)
@@ -47,7 +47,7 @@ async def create_order(
         if not item.movie:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Movie with id {item.movie_id} no longer exists"
+                detail=f"Movie with id {item.movie_id} no longer exists",
             )
 
         stmt_bought = (
@@ -56,7 +56,7 @@ async def create_order(
             .where(
                 Order.user_id == current_user.id,
                 Order.status == OrderStatusEnum.Paid,
-                Order.movie_id == item.movie_id
+                Order.movie_id == item.movie_id,
             )
         )
         result = await db.execute(stmt_bought)
@@ -72,7 +72,7 @@ async def create_order(
             .where(
                 Order.user_id == current_user.id,
                 Order.status == OrderStatusEnum.Pending,
-                OrderItem.movie_id == item.movie_id
+                OrderItem.movie_id == item.movie_id,
             )
         )
         result = await db.execute(stmt_pending)
@@ -88,11 +88,11 @@ async def create_order(
     db.add(new_order)
 
     for item in cart_items:
-        db.add(OrderItem(
-            order=new_order,
-            movie_id=item.movie_id,
-            price_at_order=item.movie.price
-        ))
+        db.add(
+            OrderItem(
+                order=new_order, movie_id=item.movie_id, price_at_order=item.movie.price
+            )
+        )
 
     for item in cart_items:
         await db.delete(item)
@@ -104,7 +104,7 @@ async def create_order(
         OrderMovieSchema(
             movie_id=item.movie_id,
             name=item.movie.name,
-            price_at_order=item.movie.price
+            price_at_order=item.movie.price,
         )
         for item in cart_items
     ]
@@ -126,9 +126,9 @@ async def create_order(
     status_code=status.HTTP_200_OK,
 )
 async def pay_order(
-        order_id: int,
-        current_user: User = Depends(get_current_user),
-        db: AsyncSession = Depends(get_db),
+    order_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     stmt_order = select(Order).where(
         Order.id == order_id,
@@ -163,9 +163,9 @@ async def pay_order(
     status_code=status.HTTP_200_OK,
 )
 async def cancel_order(
-        order_id: int,
-        current_user: User = Depends(get_current_user),
-        db: AsyncSession = Depends(get_db),
+    order_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     stmt_order = select(Order).where(
         Order.id == order_id,
@@ -212,7 +212,9 @@ async def get_orders_for_admin(
     user_id: Optional[int] = Query(None, description="Filter by user id"),
     start_date: Optional[date] = Query(None, description="Filter by start date"),
     end_date: Optional[date] = Query(None, description="Filter by end date"),
-    order_status: Optional[OrderStatusEnum] = Query(None, description="Filter by order status"),
+    order_status: Optional[OrderStatusEnum] = Query(
+        None, description="Filter by order status"
+    ),
 ) -> List[OrderResponseSchema]:
     stmt = select(Order)
 

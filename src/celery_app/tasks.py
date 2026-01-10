@@ -1,11 +1,7 @@
 from datetime import datetime, timezone
 
 from src.database.session import async_session
-from src.database.models.user import (
-    RefreshToken,
-    ActivationToken,
-    PasswordResetToken
-)
+from src.database.models.user import RefreshToken, ActivationToken, PasswordResetToken
 from src.celery_app.celery_app import celery_app
 import asyncio
 
@@ -16,9 +12,7 @@ def delete_expired_token_sync():
             now_utc = datetime.now(timezone.utc)
 
             await db.execute(
-                RefreshToken.__table__.delete().where(
-                    RefreshToken.expires_at < now_utc
-                )
+                RefreshToken.__table__.delete().where(RefreshToken.expires_at < now_utc)
             )
 
             await db.execute(
@@ -34,6 +28,7 @@ def delete_expired_token_sync():
             )
 
             await db.commit()
+
     asyncio.run(inner())
 
 

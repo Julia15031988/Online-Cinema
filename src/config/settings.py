@@ -32,11 +32,17 @@ class BaseAppSettings(BaseSettings):
     MAILHOG_API_PORT: int = int(os.getenv("MAILHOG_API_PORT", 8025))
 
     CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
-    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+    CELERY_RESULT_BACKEND: str = os.getenv(
+        "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
+    )
 
     STRIPE_SECRET_KEY: str = os.getenv("STRIPE_SECRET_KEY", "test_secret_key")
-    STRIPE_PUBLISHABLE_KEY: str = os.getenv("STRIPE_PUBLISHABLE_KEY", "test_publishable_key")
-    STRIPE_WEBHOOK_SECRET: str = os.getenv("STRIPE_WEBHOOK_SECRET", "test_webhook_secret")
+    STRIPE_PUBLISHABLE_KEY: str = os.getenv(
+        "STRIPE_PUBLISHABLE_KEY", "test_publishable_key"
+    )
+    STRIPE_WEBHOOK_SECRET: str = os.getenv(
+        "STRIPE_WEBHOOK_SECRET", "test_webhook_secret"
+    )
     STRIPE_CURRENCY: str = os.getenv("STRIPE_CURRENCY", "usd")
 
     S3_STORAGE_HOST: str = os.getenv("MINIO_HOST", "minio-theater")
@@ -63,7 +69,6 @@ class Settings(BaseAppSettings):
 
     STRIPE_SECRET_KEY: str = os.getenv("STRIPE_SECRET_KEY", "sk_test_default")
 
-
     @property
     def DATABASE_URL(self) -> str:
         return (
@@ -84,15 +89,17 @@ class TestingSettings(BaseAppSettings):
     JWT_SIGNING_ALGORITHM: str = "HS256"
 
     def model_post_init(self, __context: dict[str, Any] | None = None) -> None:
-        object.__setattr__(self, 'PATH_TO_DB', ":memory:")
+        object.__setattr__(self, "PATH_TO_DB", ":memory:")
         object.__setattr__(
             self,
-            'PATH_TO_MOVIES_CSV',
-            str(self.BASE_DIR / "database" / "seed_data" / "test_data.csv")
+            "PATH_TO_MOVIES_CSV",
+            str(self.BASE_DIR / "database" / "seed_data" / "test_data.csv"),
         )
+
 
 @lru_cache
 def get_settings() -> BaseAppSettings:
     return BaseAppSettings()
+
 
 settings = Settings()

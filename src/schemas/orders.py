@@ -8,7 +8,9 @@ from pydantic import BaseModel, Field, ConfigDict
 class OrderMovieSchema(BaseModel):
     movie_id: int = Field(..., description="ID of the movie in the order.")
     name: str = Field(..., description="Name of the movie.")
-    price_at_order: Decimal = Field(..., description="Price of the movie at the time of order.")
+    price_at_order: Decimal = Field(
+        ..., description="Price of the movie at the time of order."
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -33,7 +35,6 @@ class OrderListItemSchema(BaseModel):
     movies: List[str] = Field(..., description="List of movie names in the order.")
 
     model_config = ConfigDict(from_attributes=True)
-
 
 
 class OrderListResponseSchema(BaseModel):

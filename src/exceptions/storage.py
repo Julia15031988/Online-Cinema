@@ -44,9 +44,11 @@ class S3PermissionError(BaseS3Error):
 
 class S3StorageInterface:
     """Interface stub for S3 storage."""
+
     pass
 
 
 class S3StorageClient(S3StorageInterface):
     """Client stub for S3 storage."""
+
     pass

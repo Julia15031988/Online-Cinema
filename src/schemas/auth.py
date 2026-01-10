@@ -1,6 +1,5 @@
 from pydantic import BaseModel, field_validator, EmailStr
-
-from src.database.validators import validate_password_strength, validate_email
+from src.database.validators import validate_password_strength
 from src.database.models.user import UserGroupEnum
 
 
@@ -8,9 +7,7 @@ class BaseEmailPasswordSchema(BaseModel):
     email: EmailStr
     password: str
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}
 
     @field_validator("email")
     @classmethod
@@ -32,9 +29,7 @@ class UserRegistrationResponseSchema(BaseModel):
     email: EmailStr
     is_active: bool
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}
 
 
 class MessageResponseSchema(BaseModel):

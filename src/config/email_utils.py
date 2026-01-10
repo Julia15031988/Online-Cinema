@@ -16,7 +16,7 @@ def get_settings() -> BaseAppSettings:
 
 
 def get_accounts_email_notificator(
-        settings: BaseAppSettings = Depends(get_settings)
+    settings: BaseAppSettings = Depends(get_settings),
 ) -> EmailSenderInterface:
     return EmailSender(
         hostname=settings.EMAIL_HOST,
@@ -33,12 +33,12 @@ def get_accounts_email_notificator(
         password_complete_email_template_name=(
             settings.PASSWORD_RESET_COMPLETE_TEMPLATE_NAME
         ),
-        success_payment_template_name=settings.SUCCESS_PAYMENT_TEMPLATE_NAME
+        success_payment_template_name=settings.SUCCESS_PAYMENT_TEMPLATE_NAME,
     )
 
 
 def get_jwt_auth_manager(
-        settings: BaseAppSettings = Depends(get_settings)
+    settings: BaseAppSettings = Depends(get_settings),
 ) -> JWTAuthManagerInterface:
     return JWTAuthManager(
         secret_key_access=settings.SECRET_KEY_ACCESS,

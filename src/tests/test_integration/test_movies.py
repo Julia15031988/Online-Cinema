@@ -19,7 +19,9 @@ async def test_get_movies_empty_database(auth_moderator_client):
     assert response.status_code == 404, f"Expected 404, got {response.status_code}"
 
     expected_detail = {"detail": "No movies found."}
-    assert response.json() == expected_detail, f"Expected {expected_detail}, got {response.json()}"
+    assert (
+        response.json() == expected_detail
+    ), f"Expected {expected_detail}, got {response.json()}"
 
 
 @pytest.mark.asyncio
@@ -28,11 +30,15 @@ async def test_get_movies_default_parameters(auth_moderator_client, seed_databas
     Test the `/api/v1/online_cinema/movies/` endpoint with default pagination parameters.
     """
     response = await auth_moderator_client.get("/api/v1/movies/")
-    assert response.status_code == 200, "Expected status code 200, but got a different value"
+    assert (
+        response.status_code == 200
+    ), "Expected status code 200, but got a different value"
 
     response_data = response.json()
     assert "items" in response_data, "Response missing 'items' field"
-    assert len(response_data["items"]) > 0, "Expected at least one movie in the response"
+    assert (
+        len(response_data["items"]) > 0
+    ), "Expected at least one movie in the response"
 
 
 @pytest.mark.asyncio
@@ -43,28 +49,42 @@ async def test_get_movies_with_custom_parameters(auth_moderator_client, seed_dat
     page = 1
     per_page = 5
 
-    response = await auth_moderator_client.get(f"/api/v1/movies/?page={page}&per_page={per_page}")
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    response = await auth_moderator_client.get(
+        f"/api/v1/movies/?page={page}&per_page={per_page}"
+    )
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
     response_data = response.json()
     assert "items" in response_data, "Response missing 'items' field"
-    assert len(response_data["items"]) <= per_page, f"Expected at most {per_page} movies in the response"
+    assert (
+        len(response_data["items"]) <= per_page
+    ), f"Expected at most {per_page} movies in the response"
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("page, per_page, expected_detail", [
-    (0, 10, "Input should be greater than or equal to 1"),
-    (1, 0, "Input should be greater than or equal to 1"),
-    (0, 0, "Input should be greater than or equal to 1"),
-])
-async def test_invalid_page_and_per_page(auth_moderator_client, page, per_page, expected_detail):
+@pytest.mark.parametrize(
+    "page, per_page, expected_detail",
+    [
+        (0, 10, "Input should be greater than or equal to 1"),
+        (1, 0, "Input should be greater than or equal to 1"),
+        (0, 0, "Input should be greater than or equal to 1"),
+    ],
+)
+async def test_invalid_page_and_per_page(
+    auth_moderator_client, page, per_page, expected_detail
+):
     """
     Test the `/api/v1/online_cinema/movies/` endpoint with invalid `page` and `per_page` parameters.
     """
-    response = await auth_moderator_client.get(f"/api/v1/movies/?page={page}&per_page={per_page}")
-    assert response.status_code in [404, 422], (
-        f"Expected status code 422 or 404 for invalid parameters, but got {response.status_code}"
+    response = await auth_moderator_client.get(
+        f"/api/v1/movies/?page={page}&per_page={per_page}"
     )
+    assert response.status_code in [
+        404,
+        422,
+    ], f"Expected status code 422 or 404 for invalid parameters, but got {response.status_code}"
 
 
 @pytest.mark.asyncio
@@ -74,14 +94,16 @@ async def test_per_page_maximum_allowed_value(auth_moderator_client, seed_databa
     """
     response = await auth_moderator_client.get("/api/v1/movies/?page=1&per_page=20")
 
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
     response_data = response.json()
 
     assert "items" in response_data, "Response missing 'items' field."
-    assert len(response_data["items"]) <= 20, (
-        f"Expected at most 20 movies, but got {len(response_data['items'])}"
-    )
+    assert (
+        len(response_data["items"]) <= 20
+    ), f"Expected at most 20 movies, but got {len(response_data['items'])}"
 
 
 @pytest.mark.asyncio
@@ -97,23 +119,31 @@ async def test_page_exceeds_maximum(auth_moderator_client, db_session, seed_data
 
     max_page = (total_movies + per_page - 1) // per_page
 
-    response = await auth_moderator_client.get(f"/api/v1/movies/?page={max_page + 1}&per_page={per_page}")
+    response = await auth_moderator_client.get(
+        f"/api/v1/movies/?page={max_page + 1}&per_page={per_page}"
+    )
 
-    assert response.status_code == 404, f"Expected status code 404, but got {response.status_code}"
+    assert (
+        response.status_code == 404
+    ), f"Expected status code 404, but got {response.status_code}"
     response_data = response.json()
 
     assert "detail" in response_data, "Response missing 'detail' field."
 
 
 @pytest.mark.asyncio
-async def test_movies_sorted_by_id_desc(auth_moderator_client, db_session, seed_database):
+async def test_movies_sorted_by_id_desc(
+    auth_moderator_client, db_session, seed_database
+):
     """
     Test that movies are returned sorted by `id` in descending order
     and match the expected data from the database.
     """
     response = await auth_moderator_client.get("/api/v1/movies/?page=1&per_page=10")
 
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
     response_data = response.json()
 
@@ -131,28 +161,40 @@ async def test_movies_sorted_by_id_desc(auth_moderator_client, db_session, seed_
 
 
 @pytest.mark.asyncio
-async def test_movie_list_with_pagination(auth_moderator_client, db_session, seed_database):
+async def test_movie_list_with_pagination(
+    auth_moderator_client, db_session, seed_database
+):
     """
     Test the `/api/v1/online_cinema/movies/` endpoint with pagination parameters.
     """
     page = 1
     per_page = 5
 
-    response = await auth_moderator_client.get(f"/api/v1/movies/?page={page}&per_page={per_page}")
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    response = await auth_moderator_client.get(
+        f"/api/v1/movies/?page={page}&per_page={per_page}"
+    )
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
     response_data = response.json()
     assert "items" in response_data, "Response missing 'items' field"
-    assert len(response_data["items"]) <= per_page, f"Expected at most {per_page} movies in the response"
+    assert (
+        len(response_data["items"]) <= per_page
+    ), f"Expected at most {per_page} movies in the response"
 
 
 @pytest.mark.asyncio
-async def test_movies_fields_match_schema(auth_moderator_client, db_session, seed_database):
+async def test_movies_fields_match_schema(
+    auth_moderator_client, db_session, seed_database
+):
     """
     Test that each movie in the response matches the fields defined in `MovieListItemSchema`.
     """
     response = await auth_moderator_client.get("/api/v1/movies/?page=1&per_page=10")
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
     response_data = response.json()
     assert "items" in response_data, "Response missing 'items' field."
@@ -173,7 +215,9 @@ async def test_get_movie_by_id_not_found(auth_moderator_client):
     """
     movie_id = 999  # Using a non-existent ID
     response = await auth_moderator_client.get(f"/api/v1/movies/{movie_id}/")
-    assert response.status_code == 404, f"Expected status code 404, but got {response.status_code}"
+    assert (
+        response.status_code == 404
+    ), f"Expected status code 404, but got {response.status_code}"
 
 
 @pytest.mark.asyncio
@@ -188,11 +232,15 @@ async def test_get_movie_by_id_valid(auth_moderator_client, db_session, seed_dat
     assert movie is not None, "No movies found in the database"
 
     response = await auth_moderator_client.get(f"/api/v1/movies/{movie.id}/")
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
 
 @pytest.mark.asyncio
-async def test_get_movie_by_id_fields_match_database(auth_moderator_client, db_session, seed_database):
+async def test_get_movie_by_id_fields_match_database(
+    auth_moderator_client, db_session, seed_database
+):
     """
     Test that the `/api/v1/online_cinema/movies/{movie_id}` endpoint returns all fields matching the database data.
     """
@@ -211,7 +259,9 @@ async def test_get_movie_by_id_fields_match_database(auth_moderator_client, db_s
     assert random_movie is not None, "No movies found in the database."
 
     response = await auth_moderator_client.get(f"/api/v1/movies/{random_movie.id}/")
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
 
 @pytest.mark.asyncio
@@ -232,7 +282,7 @@ async def test_create_movie_success(auth_moderator_client, seed_movie_relations)
         "certification_id": 1,
         "genre_ids": [1],
         "star_ids": [1],
-        "director_ids": [1]
+        "director_ids": [1],
     }
 
     response = await auth_moderator_client.post("/api/v1/movies/", json=movie_data)
@@ -246,7 +296,9 @@ async def test_create_movie_success(auth_moderator_client, seed_movie_relations)
 
 
 @pytest.mark.asyncio
-async def test_create_movie_duplicate_error(auth_moderator_client, seed_movie_relations):
+async def test_create_movie_duplicate_error(
+    auth_moderator_client, seed_movie_relations
+):
     """
     Test movie creation with duplicate name.
     """
@@ -263,7 +315,7 @@ async def test_create_movie_duplicate_error(auth_moderator_client, seed_movie_re
         "certification_id": 1,
         "genre_ids": [1],
         "star_ids": [1],
-        "director_ids": [1]
+        "director_ids": [1],
     }
 
     # Create first movie
@@ -272,7 +324,10 @@ async def test_create_movie_duplicate_error(auth_moderator_client, seed_movie_re
 
     # Try to create duplicate movie
     response2 = await auth_moderator_client.post("/api/v1/movies/", json=movie_data)
-    assert response2.status_code in [400, 409], f"Expected 400 or 409, got {response2.status_code}"
+    assert response2.status_code in [
+        400,
+        409,
+    ], f"Expected 400 or 409, got {response2.status_code}"
 
 
 @pytest.mark.asyncio
@@ -298,8 +353,12 @@ async def test_delete_movie_success(auth_moderator_client, seed_movie_relations)
     }
 
     # Create
-    create_response = await auth_moderator_client.post("/api/v1/movies/", json=movie_data)
-    assert create_response.status_code == 201, f"Expected 201, got {create_response.status_code}"
+    create_response = await auth_moderator_client.post(
+        "/api/v1/movies/", json=movie_data
+    )
+    assert (
+        create_response.status_code == 201
+    ), f"Expected 201, got {create_response.status_code}"
     payload = create_response.json()
     assert "id" in payload, f"No 'id' in response: {payload}"
     movie_id = payload["id"]
@@ -312,19 +371,20 @@ async def test_delete_movie_success(auth_moderator_client, seed_movie_relations)
 
     # Delete
     delete_response = await auth_moderator_client.delete(f"/api/v1/movies/{movie_id}/")
-    assert delete_response.status_code in (200, 204), (
-        f"Expected 200/204, got {delete_response.status_code}, body={delete_response.text}"
-    )
+    assert delete_response.status_code in (
+        200,
+        204,
+    ), f"Expected 200/204, got {delete_response.status_code}, body={delete_response.text}"
 
     get_response = await auth_moderator_client.get(f"/api/v1/movies/{movie_id}/")
-    assert get_response.status_code == 404, (
-        f"After delete expected 404, got {get_response.status_code}, body={get_response.text}"
-    )
+    assert (
+        get_response.status_code == 404
+    ), f"After delete expected 404, got {get_response.status_code}, body={get_response.text}"
 
     second_delete = await auth_moderator_client.delete(f"/api/v1/movies/{movie_id}/")
-    assert second_delete.status_code == 404, (
-        f"Second delete expected 404, got {second_delete.status_code}, body={second_delete.text}"
-    )
+    assert (
+        second_delete.status_code == 404
+    ), f"Second delete expected 404, got {second_delete.status_code}, body={second_delete.text}"
 
 
 @pytest.mark.asyncio
@@ -356,22 +416,27 @@ async def test_update_movie_success(auth_moderator_client, seed_movie_relations)
         "certification_id": 1,
         "genre_ids": [1],
         "star_ids": [1],
-        "director_ids": [1]
+        "director_ids": [1],
     }
 
-    create_response = await auth_moderator_client.post("/api/v1/movies/", json=movie_data)
-    assert create_response.status_code == 201, f"Expected 201, got {create_response.status_code}"
+    create_response = await auth_moderator_client.post(
+        "/api/v1/movies/", json=movie_data
+    )
+    assert (
+        create_response.status_code == 201
+    ), f"Expected 201, got {create_response.status_code}"
 
     movie_id = create_response.json()["id"]
 
     # Update the movie
-    update_data = {
-        "name": "Updated Test Movie",
-        "price": 14.99
-    }
+    update_data = {"name": "Updated Test Movie", "price": 14.99}
 
-    update_response = await auth_moderator_client.put(f"/api/v1/movies/{movie_id}/", json=update_data)
-    assert update_response.status_code == 200, f"Expected 200, got {update_response.status_code}"
+    update_response = await auth_moderator_client.put(
+        f"/api/v1/movies/{movie_id}/", json=update_data
+    )
+    assert (
+        update_response.status_code == 200
+    ), f"Expected 200, got {update_response.status_code}"
 
 
 @pytest.mark.asyncio
@@ -392,7 +457,7 @@ async def test_update_movie_not_found(auth_moderator_client, seed_movie_relation
         "certification_id": 1,
         "genre_ids": [1],
         "star_ids": [1],
-        "director_ids": [1]
+        "director_ids": [1],
     }
 
     response = await auth_moderator_client.put("/api/v1/movies/999/", json=update_data)
@@ -412,12 +477,18 @@ async def test_search_movies(auth_moderator_client, db_session, seed_database):
 
     # Search for the movie by name
     search_term = movie.name.split()[0]  # Use first word of movie name
-    response = await auth_moderator_client.get(f"/api/v1/movies/search/?search={search_term}")
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    response = await auth_moderator_client.get(
+        f"/api/v1/movies/search/?search={search_term}"
+    )
+    assert (
+        response.status_code == 200
+    ), f"Expected status code 200, but got {response.status_code}"
 
     response_data = response.json()
     assert len(response_data) > 0, "No movies found in search results"
-    assert any(m["name"] == movie.name for m in response_data), "Searched movie not found in results"
+    assert any(
+        m["name"] == movie.name for m in response_data
+    ), "Searched movie not found in results"
 
 
 @pytest.mark.asyncio

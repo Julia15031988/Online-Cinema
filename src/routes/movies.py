@@ -30,19 +30,21 @@ router = APIRouter()
     response_model=MovieListResponseSchema,
     summary="Retrieve all movies",
     description="Returns a paginated list of movies "
-                "with optional filtering, sorting, "
-                "and search capabilities.",
+    "with optional filtering, sorting, "
+    "and search capabilities.",
     status_code=status.HTTP_200_OK,
 )
 async def get_movie_list(
-        page: int = Query(1, ge=1),
-        per_page: int = Query(10, ge=1),
-        db: AsyncSession = Depends(get_db),
-        year: Optional[int] = Query(None, description="Filter by year"),
-        imdb: Optional[float] = Query(None, description="Filter by imdb rating"),
-        sort_by: Literal["id", "price", "time", "votes"] = Query("id"),
-        order: Literal["asc", "desc"] = Query("asc"),
-        search: Optional[str] = Query(None, description="Filter by name, description, stars and directors"),
+    page: int = Query(1, ge=1),
+    per_page: int = Query(10, ge=1),
+    db: AsyncSession = Depends(get_db),
+    year: Optional[int] = Query(None, description="Filter by year"),
+    imdb: Optional[float] = Query(None, description="Filter by imdb rating"),
+    sort_by: Literal["id", "price", "time", "votes"] = Query("id"),
+    order: Literal["asc", "desc"] = Query("asc"),
+    search: Optional[str] = Query(
+        None, description="Filter by name, description, stars and directors"
+    ),
 ) -> MovieListResponseSchema:
     query = select(Movie)
 
@@ -54,10 +56,7 @@ async def get_movie_list(
 
     # sorting
     if not hasattr(Movie, sort_by):
-        raise HTTPException(
-            status_code=422,
-            detail=f"Invalid sort field: {sort_by}"
-        )
+        raise HTTPException(status_code=422, detail=f"Invalid sort field: {sort_by}")
     column = getattr(Movie, sort_by)
     query = query.order_by(column.desc() if order == "desc" else column)
 
@@ -81,8 +80,7 @@ async def get_movie_list(
 
     if total_pages == 0 or page > total_pages:
         raise HTTPException(
-            status_code=404,
-            detail="No movies found matching the specified criteria"
+            status_code=404, detail="No movies found matching the specified criteria"
         )
 
     # pagination
@@ -93,7 +91,7 @@ async def get_movie_list(
     if not movies:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No movies found matching the specified criteria"
+            detail="No movies found matching the specified criteria",
         )
 
     movie_list = [MovieListItemSchema.model_validate(movie) for movie in movies]
@@ -102,11 +100,15 @@ async def get_movie_list(
         movies=movie_list,
         prev_page=(
             f"/movies/?page={page - 1}&per_page={per_page}"
-            f"&sort_by={sort_by}&order={order}" if page > 1 else None
+            f"&sort_by={sort_by}&order={order}"
+            if page > 1
+            else None
         ),
         next_page=(
             f"/movies/?page={page + 1}&per_page={per_page}"
-            f"&sort_by={sort_by}&order={order}" if page < total_pages else None
+            f"&sort_by={sort_by}&order={order}"
+            if page < total_pages
+            else None
         ),
         total_pages=total_pages,
         total_items=total_items,
@@ -118,13 +120,13 @@ async def get_movie_list(
     response_model=MovieDetailSchema,
     summary="Get movie detail by ID",
     description="Retrieves detailed information about "
-                "a specific movie including its "
-                "certification, genres, stars, and directors.",
+    "a specific movie including its "
+    "certification, genres, stars, and directors.",
     status_code=status.HTTP_200_OK,
 )
 async def get_movie_by_id(
-        movie_id: int,
-        db: AsyncSession = Depends(get_db),
+    movie_id: int,
+    db: AsyncSession = Depends(get_db),
 ) -> MovieDetailSchema:
     stmt = (
         select(Movie)
@@ -143,7 +145,7 @@ async def get_movie_by_id(
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Movie with ID '{movie_id}' not found."
+            detail=f"Movie with ID '{movie_id}' not found.",
         )
 
     return MovieDetailSchema.model_validate(movie)
@@ -154,21 +156,20 @@ async def get_movie_by_id(
     response_model=MovieDetailSchema,
     summary="Create a new movie record",
     description=(
-            "Add a new movie to the database, including "
-            "its genres, stars, directors, "
-            "and certification. If any of the related "
-            "entities don’t exist, they’ll be created automatically."
+        "Add a new movie to the database, including "
+        "its genres, stars, directors, "
+        "and certification. If any of the related "
+        "entities don’t exist, they’ll be created automatically."
     ),
     status_code=status.HTTP_201_CREATED,
 )
 async def create_movie(
-        movie_data: MovieCreateSchema,
-        current_user=Depends(moderator_required),
-        db: AsyncSession = Depends(get_db),
+    movie_data: MovieCreateSchema,
+    current_user=Depends(moderator_required),
+    db: AsyncSession = Depends(get_db),
 ) -> MovieDetailSchema:
     existing_stmt = select(Movie).where(
-        (Movie.name == movie_data.name),
-        (Movie.time == movie_data.time)
+        (Movie.name == movie_data.name), (Movie.time == movie_data.time)
     )
     existing_result = await db.execute(existing_stmt)
     existing_movie = existing_result.scalars().first()
@@ -179,7 +180,7 @@ async def create_movie(
             detail=(
                 f"The movie '{movie_data.name}' released on "
                 f"'{movie_data.time}' already exists in the database."
-            )
+            ),
         )
 
     try:
@@ -256,7 +257,7 @@ async def create_movie(
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid movie data. Please check your input and try again."
+            detail="Invalid movie data. Please check your input and try again.",
         )
 
 
@@ -264,17 +265,17 @@ async def create_movie(
     "/{movie_id}",
     summary="Update a movie by ID",
     description=(
-            "Modify one or more details of an "
-            "existing movie by its unique ID. "
-            "Only the provided fields will be updated."
+        "Modify one or more details of an "
+        "existing movie by its unique ID. "
+        "Only the provided fields will be updated."
     ),
     status_code=status.HTTP_200_OK,
 )
 async def update_movie(
-        movie_id: int,
-        movie_data: MovieUpdateSchema,
-        current_user=Depends(moderator_required),
-        db: AsyncSession = Depends(get_db),
+    movie_id: int,
+    movie_data: MovieUpdateSchema,
+    current_user=Depends(moderator_required),
+    db: AsyncSession = Depends(get_db),
 ):
     stmt = select(Movie).where(Movie.id == movie_id)
     result = await db.execute(stmt)
@@ -283,7 +284,7 @@ async def update_movie(
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Movie with ID '{movie_id}' not found."
+            detail=f"Movie with ID '{movie_id}' not found.",
         )
 
     for field, value in movie_data.model_dump(exclude_unset=True).items():
@@ -296,7 +297,7 @@ async def update_movie(
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or duplicate data. Please verify your input."
+            detail="Invalid or duplicate data. Please verify your input.",
         )
 
     return {"detail": "Movie updated successfully."}
@@ -306,15 +307,15 @@ async def update_movie(
     "/{movie_id}",
     summary="Delete movie by ID",
     description=(
-            "Remove an existing movie from the database by its unique ID. "
-            "If the movie does not exist, a 404 error will be returned."
+        "Remove an existing movie from the database by its unique ID. "
+        "If the movie does not exist, a 404 error will be returned."
     ),
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_movie(
-        movie_id: int,
-        current_user=Depends(moderator_required),
-        db: AsyncSession = Depends(get_db),
+    movie_id: int,
+    current_user=Depends(moderator_required),
+    db: AsyncSession = Depends(get_db),
 ):
     stmt = select(Movie).where(Movie.id == movie_id)
     result = await db.execute(stmt)
@@ -323,7 +324,7 @@ async def delete_movie(
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Movie with ID '{movie_id}' not found."
+            detail=f"Movie with ID '{movie_id}' not found.",
         )
 
     stmt_order = select(OrderItem).where(OrderItem.movie_id == movie_id)
@@ -333,7 +334,7 @@ async def delete_movie(
     if order:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot delete a movie that has been purchased by at least one user."
+            detail="Cannot delete a movie that has been purchased by at least one user.",
         )
 
     await db.delete(movie)

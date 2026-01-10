@@ -1,17 +1,14 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.database.models.orders import Order, OrderItem
 from src.database.models.user import User
 from src.database.models.cart import Cart, CartItem
 from src.database.models.movies import Movie
-
 from src.schemas.cart import CartResponse, CartItemSchema
-
 from fastapi import APIRouter, Depends, HTTPException, status
-
 from src.database.session import get_db
 from src.config.dependencies import get_current_user
+
 
 router = APIRouter()
 
@@ -21,13 +18,13 @@ router = APIRouter()
     response_model=CartResponse,
     summary="Get the current user's cart",
     description="Retrieve the shopping cart of "
-                "the authenticated user, including all "
-                "added movies.",
+    "the authenticated user, including all "
+    "added movies.",
     status_code=status.HTTP_200_OK,
 )
 async def get_cart_by_user_id(
-        db: AsyncSession = Depends(get_db),
-        current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
 ) -> CartResponse:
     stmt = select(Cart).where(Cart.user_id == current_user.id)
     result = await db.execute(stmt)
@@ -59,14 +56,13 @@ async def get_cart_by_user_id(
 @router.post(
     "/",
     summary="Add a movie to the cart",
-    description="Add a selected movie to the "
-                "authenticated user's shopping cart.",
+    description="Add a selected movie to the " "authenticated user's shopping cart.",
     status_code=status.HTTP_201_CREATED,
 )
 async def add_cart_item(
-        movie_id: int,
-        db: AsyncSession = Depends(get_db),
-        current_user: User = Depends(get_current_user),
+    movie_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     stmt_movie = select(Movie).where(Movie.id == movie_id)
     result = await db.execute(stmt_movie)
@@ -94,9 +90,13 @@ async def add_cart_item(
             detail="This movie is already present in your cart.",
         )
 
-    stmt_purchase = select(OrderItem).join(Order).where(
-        OrderItem.movie_id == movie_id,
-        Order.user_id == current_user.id,
+    stmt_purchase = (
+        select(OrderItem)
+        .join(Order)
+        .where(
+            OrderItem.movie_id == movie_id,
+            Order.user_id == current_user.id,
+        )
     )
     result = await db.execute(stmt_purchase)
     purchase = result.scalars().first()
@@ -105,7 +105,7 @@ async def add_cart_item(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You have already purchased this movie. "
-                   "Repeat purchases are not allowed."
+            "Repeat purchases are not allowed.",
         )
 
     cart_item = CartItem(
@@ -127,9 +127,9 @@ async def add_cart_item(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_movie_from_cart(
-        movie_id: int,
-        db: AsyncSession = Depends(get_db),
-        current_user: User = Depends(get_current_user),
+    movie_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     stmt_cart = select(Cart).where(Cart.user_id == current_user.id)
     result = await db.execute(stmt_cart)
@@ -142,8 +142,7 @@ async def delete_movie_from_cart(
         )
 
     stmt_movie = select(CartItem).where(
-        CartItem.cart_id == cart.id,
-        CartItem.movie_id == movie_id
+        CartItem.cart_id == cart.id, CartItem.movie_id == movie_id
     )
     result = await db.execute(stmt_movie)
     movie = result.scalars().first()
